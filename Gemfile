@@ -9,3 +9,9 @@ gem "irb"
 gem "rake", "~> 13.0"
 
 gem "standard", "~> 1.3"
+
+# Test stack (versions intentionally unpinned to follow middleman's test infra)
+gem "cucumber"
+gem "aruba"
+gem "capybara"
+gem "minitest"
