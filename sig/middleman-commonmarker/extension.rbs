@@ -1,0 +1,7 @@
+module Middleman
+  class CommonmarkerExtension < ::Middleman::Extension
+    def initialize: (untyped app, ?Hash[Symbol, untyped] options_hash) ?{ (untyped, untyped) -> void } -> void
+
+    def after_configuration: () -> void
+  end
+end

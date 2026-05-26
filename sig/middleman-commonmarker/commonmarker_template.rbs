@@ -1,0 +1,23 @@
+module Middleman
+  module Renderers
+    class CommonmarkerTemplate < ::Tilt::Template
+      DEFAULT_PARSE_OPTIONS: Hash[Symbol, untyped]
+      DEFAULT_RENDER_OPTIONS: Hash[Symbol, untyped]
+      DEFAULT_EXTENSION_OPTIONS: Hash[Symbol, untyped]
+
+      attr_accessor self.scope: untyped
+
+      def prepare: () -> void
+      def evaluate: (untyped scope, untyped locals) ?{ () -> void } -> String
+
+      private
+
+      def transform_image_node: (untyped node) -> void
+      def transform_link_node: (untyped node) -> void
+      def extract_text: (untyped node) -> String
+      def html_node_from: (String html) -> untyped
+      def render_options_with_unsafe: () -> Hash[Symbol, untyped]
+      def build_commonmarker_options: () -> Hash[Symbol, untyped]
+    end
+  end
+end
