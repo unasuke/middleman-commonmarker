@@ -1,34 +1,66 @@
 # Middleman::Commonmarker
 
-TODO: Delete this and the text below, and describe your gem
+A [Middleman](https://middlemanapp.com/) extension that renders Markdown with [commonmarker](https://github.com/gjtorikian/commonmarker) (the Rust/comrak based CommonMark renderer).
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/middleman/commonmarker`. To experiment with that code, run `bin/console` for an interactive prompt.
+It walks the parsed AST and rewrites image and link nodes through Middleman's `image_tag` and `url_for` helpers, so you get sitemap-aware links and `automatic_image_sizes` support — on par with the Redcarpet engine.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add the gem to your Middleman project's `Gemfile`:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem "middleman-commonmarker"
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
+Then run `bundle install`.
 
 ## Usage
 
-TODO: Write usage instructions here
+Activate the extension in `config.rb`:
+
+```ruby
+activate :commonmarker
+```
+
+That's it — Markdown files (`.markdown`, `.md`, `.mkd`, …) are now rendered with commonmarker.
+
+> **Important:** Enable the engine with `activate :commonmarker`, **not** with
+> `set :markdown_engine, :commonmarker`. On a released middleman-core the latter
+> makes the generic markdown branch look for `Tilt::CommonmarkerTemplate` and
+> raise a `NameError`. Always use `activate :commonmarker`.
+
+### Options
+
+Pass commonmarker options either through `set :markdown` (the usual Markdown engine convention) or through the extension's `options:` hash:
+
+```ruby
+# via set :markdown
+activate :commonmarker
+set :markdown, table: true, strikethrough: true, smartypants: true
+
+# via activate
+activate :commonmarker, options: { table: true, strikethrough: true }
+```
+
+Note that flat keys on `activate` (e.g. `activate :commonmarker, table: true`) are **not** supported — Middleman validates extension options against declared names, so commonmarker options must be nested under `options:`. Options given to `activate` take precedence over `set :markdown` on conflicting keys.
+
+These flat options are mapped onto commonmarker's `parse` / `render` / `extension` option groups (and `smartypants` maps to `parse.smart`).
+
+### Raw HTML is enabled during rendering
+
+To emit the `<img>` HTML produced by `image_tag`, the renderer forces commonmarker's `unsafe: true` during transformation.
+As a result, raw HTML in your Markdown is passed through (consistent with Redcarpet's default, where `filter_html` is opt-in).
+
+## Scope
+
+This extension covers helper integration (`image_tag` / `url_for`), `automatic_image_sizes`, and commonmarker's native parse/render/extension options (`table`, `strikethrough`, `autolink`, `smartypants`, `tasklist`, …).
+Redcarpet-specific options such as `no_images`, `no_links`, `link_attributes`, and `filter_html` are out of scope.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bin/setup` to install dependencies. Then run
+`bundle exec rake` to run StandardRB, the minitest unit tests, and the cucumber
+features. You can also run `bin/console` for an interactive prompt.
 
 ## Contributing
 
