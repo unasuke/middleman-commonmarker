@@ -8,7 +8,7 @@ gemspec
 gem "irb"
 gem "rake", "~> 13.0"
 
-gem "standard", "~> 1.3"
+gem "standard", "~> 1.55"
 
 # Test stack (versions intentionally unpinned to follow middleman's test infra)
 gem "cucumber"
