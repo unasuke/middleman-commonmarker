@@ -16,7 +16,9 @@ module Middleman
       def transform_link_node: (untyped node) -> void
       def extract_text: (untyped node) -> String
       def html_node_from: (String html) -> untyped
+      def render_html: (untyped doc, Hash[Symbol, untyped] commonmarker_options) -> String
       def render_options_with_unsafe: () -> Hash[Symbol, untyped]
+      def build_commonmarker_plugins: () -> Hash[Symbol, untyped]
       def build_commonmarker_options: () -> Hash[Symbol, untyped]
     end
   end
