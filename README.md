@@ -46,6 +46,29 @@ Note that flat keys on `activate` (e.g. `activate :commonmarker, table: true`) a
 
 These flat options are mapped onto commonmarker's `parse` / `render` / `extension` option groups (and `smartypants` maps to `parse.smart`).
 
+### Syntax highlighting
+
+By default, commonmarker highlights fenced code blocks with the `base16-ocean.dark` theme, writing the colors as inline `style` attributes.
+
+Use the `plugins` option to change this. Its value is passed as-is to commonmarker's `plugins:` argument; see [commonmarker's README](https://github.com/gjtorikian/commonmarker#plugins) for the available values.
+
+```ruby
+# Use another built-in theme
+set :markdown, plugins: {syntax_highlighter: {theme: "InspiredGitHub"}}
+
+# Load syntax_themes/my-theme.tmTheme
+set :markdown, plugins: {
+  syntax_highlighter: {theme: "my-theme", path: File.expand_path("syntax_themes", __dir__)}
+}
+
+# Disable syntax highlighting
+set :markdown, plugins: {syntax_highlighter: nil}
+```
+
+Give `path` as an absolute path; a relative path is resolved against the current working directory.
+
+`plugins` can also be given through `activate :commonmarker, options: { plugins: ... }`. When both are set, the `activate` value replaces the `set :markdown` value entirely (no deep merge).
+
 ### Raw HTML is enabled during rendering
 
 To emit the `<img>` HTML produced by `image_tag`, the renderer forces commonmarker's `unsafe: true` during transformation.
@@ -53,7 +76,7 @@ As a result, raw HTML in your Markdown is passed through (consistent with Redcar
 
 ## Scope
 
-This extension covers helper integration (`image_tag` / `url_for`), `automatic_image_sizes`, and commonmarker's native parse/render/extension options (`table`, `strikethrough`, `autolink`, `smartypants`, `tasklist`, …).
+This extension covers helper integration (`image_tag` / `url_for`), `automatic_image_sizes`, commonmarker's native parse/render/extension options (`table`, `strikethrough`, `autolink`, `smartypants`, `tasklist`, …), and commonmarker plugins such as the syntax highlighter (`plugins`).
 Redcarpet-specific options such as `no_images`, `no_links`, `link_attributes`, and `filter_html` are out of scope.
 
 ## Development

@@ -75,6 +75,27 @@ Feature: Markdown (Commonmarker) support
     When I go to "/tables.html"
     Then I should see "<table>"
 
+  Scenario: Commonmarker passes plugins through set :markdown
+    Given a fixture app "markdown-app"
+    And a file named "config.rb" with:
+      """
+      activate :commonmarker
+      set :markdown, plugins: {syntax_highlighter: {theme: "InspiredGitHub"}}
+      """
+    Given the Server is running at "markdown-app"
+    When I go to "/fenced_code_blocks.html"
+    Then I should see "background-color:#ffffff"
+
+  Scenario: Commonmarker passes plugins through activate
+    Given a fixture app "markdown-app"
+    And a file named "config.rb" with:
+      """
+      activate :commonmarker, options: {plugins: {syntax_highlighter: {theme: "InspiredGitHub"}}}
+      """
+    Given the Server is running at "markdown-app"
+    When I go to "/fenced_code_blocks.html"
+    Then I should see "background-color:#ffffff"
+
   Scenario: Commonmarker uses our link_to and image_tag helpers
     Given a fixture app "markdown-app"
     And a file named "config.rb" with:

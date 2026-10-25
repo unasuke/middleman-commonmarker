@@ -2,6 +2,7 @@
 
 require "commonmarker"
 require "active_support/core_ext/module/attribute_accessors"
+require "active_support/core_ext/hash/keys"
 
 module Middleman
   module Renderers
@@ -21,6 +22,7 @@ module Middleman
 
       def prepare
         @context = options.delete(:context)
+        @commonmarker_plugins = build_commonmarker_plugins
         @commonmarker_options = build_commonmarker_options
       end
 
@@ -36,10 +38,10 @@ module Middleman
             end
           end
           # Force unsafe so the injected raw <img> HTML is emitted.
-          return doc.to_html(options: render_options_with_unsafe)
+          return render_html(doc, render_options_with_unsafe)
         end
 
-        doc.to_html(options: @commonmarker_options)
+        render_html(doc, @commonmarker_options)
       end
 
       private
@@ -77,10 +79,30 @@ module Middleman
         nil
       end
 
+      # Render with the user's `plugins` when given; otherwise let commonmarker
+      # apply its default plugins.
+      def render_html(doc, commonmarker_options)
+        doc.to_html(options: commonmarker_options, **@commonmarker_plugins)
+      end
+
       def render_options_with_unsafe
         @commonmarker_options.merge(
           render: @commonmarker_options[:render].merge(unsafe: true)
         )
+      end
+
+      # Take `plugins` out of the options as keyword arguments for to_html: {}
+      # when unset, {plugins: value} when set (a nil value disables the syntax
+      # highlighter). When both :plugins and "plugins" are present, the later
+      # one wins, as with the flat options, so `activate` overrides
+      # `set :markdown`.
+      def build_commonmarker_plugins
+        keys = options.keys.select { |key| key.to_s == "plugins" }
+        return {} if keys.empty?
+
+        value = keys.map { |key| options.delete(key) }.last
+        value = value.deep_symbolize_keys if value.is_a?(Hash)
+        {plugins: value}
       end
 
       # Distribute the flat `set :markdown, ...` options into the
